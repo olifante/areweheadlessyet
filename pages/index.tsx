@@ -21,9 +21,15 @@ const Home: NextPage<{ page: AreWeHeadlessYetHomePage; topics: Topics }> = ({
     </Layout>
 );
 
-export async function getStaticProps() {
-    const page = await getAreWeHeadlessYetHomePage();
-    const topics = await getAreWeHeadlessYetTopics();
+export async function getStaticProps({ locale, defaultLocale }) {
+    console.log(`index getStaticProps:
+    locale: ${locale}
+    default locale: ${defaultLocale}`);
+    if (locale === undefined) {
+        locale = defaultLocale;
+    }
+    const page = await getAreWeHeadlessYetHomePage(locale);
+    const topics = await getAreWeHeadlessYetTopics(locale);
 
     return { props: { page: page, topics: topics } };
 }

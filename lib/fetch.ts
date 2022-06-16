@@ -32,9 +32,10 @@ async function fetchHelper(path: string, params: { [key: string]: string }) {
 /**
  * Retrieves the ID of the AreWeHeadless home page for further API querying.
  */
-async function getAreWeHeadlessYetHomePageID() {
+async function getAreWeHeadlessYetHomePageID(locale: string ) {
     const response = await fetchHelper('', {
         type: 'areweheadlessyet.AreWeHeadlessYetHomePage',
+        locale: locale,
     });
 
     const items = response.items;
@@ -47,8 +48,8 @@ async function getAreWeHeadlessYetHomePageID() {
 /**
  * Retrieves the AreWeHeadlessYet home page.
  */
-export async function getAreWeHeadlessYetHomePage() {
-    const homePageID = await getAreWeHeadlessYetHomePageID();
+export async function getAreWeHeadlessYetHomePage(locale: string) {
+    const homePageID = await getAreWeHeadlessYetHomePageID(locale);
     const response = await fetchHelper(homePageID, {});
     return humps.camelizeKeys(response);
 }
@@ -56,9 +57,10 @@ export async function getAreWeHeadlessYetHomePage() {
 /**
  * Retrieves all topics defined in the AreWeHeadlessYet backend.
  */
-export async function getAreWeHeadlessYetTopics() {
+export async function getAreWeHeadlessYetTopics(locale: string) {
     const response = await fetchHelper('', {
         type: 'areweheadlessyet.AreWeHeadlessYetTopicPage',
+        locale: locale,
         fields: 'title,status_color,introduction',
     });
     return humps.camelizeKeys(response);
@@ -67,9 +69,10 @@ export async function getAreWeHeadlessYetTopics() {
 /**
  * Retrieves all topic pages from the AreWeHeadlessYet backend.
  */
-export async function getAreWeHeadlessYetTopicPages() {
+export async function getAreWeHeadlessYetTopicPages(locale: string) {
     const response = await fetchHelper('', {
         type: 'areweheadlessyet.AreWeHeadlessYetTopicPage',
+        locale: locale,
         fields: '*',
     });
     return <Topic[]>humps.camelizeKeys(response.items);
@@ -79,10 +82,11 @@ export async function getAreWeHeadlessYetTopicPages() {
  * Retrieves a topic's page.
  * @param slug - Topic's slug
  */
-export async function getAreWeHeadlessYetTopicPage(slug: string) {
+export async function getAreWeHeadlessYetTopicPage(slug: string, locale: string) {
     const response = await fetchHelper('', {
         type: 'areweheadlessyet.AreWeHeadlessYetTopicPage',
         slug: slug,
+        locale: locale,
         fields: '*',
     });
 
