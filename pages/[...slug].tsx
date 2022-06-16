@@ -25,7 +25,7 @@ export async function getStaticPaths({ locales, defaultLocale }) {
     const topics = await getAreWeHeadlessYetTopicPages(locales);
     const paths = topics.map((topic: Topic) => ({
         params: {
-            slug: topic.meta.slug,
+            slug: [topic.meta.slug],
         },
     }));
 
@@ -35,15 +35,27 @@ export async function getStaticPaths({ locales, defaultLocale }) {
     };
 }
 
-export async function getStaticProps({ params, locale, defaultLocale }: { [key: string]: any }) {
+export async function getStaticProps({
+    params,
+    locale,
+    defaultLocale,
+}: {
+    [key: string]: any;
+}) {
+    if (locale === undefined) {
+        locale = defaultLocale;
+    }
+    let page = null;
+    const slug = params ? params.slug[params.slug.length - 1] : null; // select last slug
+    try {
+        page = await getAreWeHeadlessYetTopicPage(slug, locale);
+    } catch (e) {
+        console.log(`Failed to obtain data :-(: ${e.message}`);
+    }
     console.log(`slug getStaticProps:
     params: ${JSON.stringify(params)}
     locale: ${locale}
     default locale: ${defaultLocale}`);
-    if (locale === undefined) {
-        locale = defaultLocale;
-    }
-    const page = await getAreWeHeadlessYetTopicPage(params.slug, locale);
 
     return {
         props: { page: page },
