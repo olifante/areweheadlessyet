@@ -2,8 +2,9 @@
 module.exports = {
     reactStrictMode: true,
     i18n: {
-        locales: ['en'],
-        defaultLocale: 'en',
+        locales: ['en-gb', 'nl-nl', 'pt-pt'],
+        defaultLocale: 'en-gb',
+        localeDetection: false,
     },
     sassOptions: {
         // allow all scss files access to these files
