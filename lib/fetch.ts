@@ -69,10 +69,10 @@ export async function getAreWeHeadlessYetTopics(locale: string) {
 /**
  * Retrieves all topic pages from the AreWeHeadlessYet backend.
  */
-export async function getAreWeHeadlessYetTopicPages(locale: string) {
+export async function getAreWeHeadlessYetTopicPages(locales: string[]) {
     const response = await fetchHelper('', {
         type: 'areweheadlessyet.AreWeHeadlessYetTopicPage',
-        locale: locale,
+        locale: locales.join(','),
         fields: '*',
     });
     return <Topic[]>humps.camelizeKeys(response.items);

@@ -1,4 +1,8 @@
-import type { NextPage } from 'next';
+import type {
+    GetStaticPropsContext,
+    GetStaticPathsContext,
+    NextPage,
+} from 'next';
 import type { AreWeHeadlessYetTopicPage } from '../components/types';
 import type { Topic } from '../components/StreamField/blocks/TopicsBlock';
 
@@ -18,48 +22,57 @@ const TopicPage: NextPage<{ page: AreWeHeadlessYetTopicPage }> = ({ page }) => (
     </Layout>
 );
 
-export async function getStaticPaths({ locales, defaultLocale }) {
+export async function getStaticPaths(context: GetStaticPathsContext) {
+    let { locales, defaultLocale } = context;
     console.log(`slug getStaticPaths:
     locales: ${locales}
     default locale: ${defaultLocale}`);
-    const topics = await getAreWeHeadlessYetTopicPages(locales);
-    const paths = topics.map((topic: Topic) => ({
-        params: {
-            slug: [topic.meta.slug],
-        },
-    }));
+    if (locales) {
+        const topics = await getAreWeHeadlessYetTopicPages(locales);
+        const paths = topics.map((topic: Topic) => ({
+            params: {
+                slug: [topic.meta.slug],
+            },
+        }));
 
-    return {
-        paths,
-        fallback: false,
-    };
+        return {
+            paths,
+            fallback: false,
+        };
+    }
 }
 
-export async function getStaticProps({
-    params,
-    locale,
-    defaultLocale,
-}: {
-    [key: string]: any;
-}) {
+export async function getStaticProps(context: GetStaticPropsContext) {
+    let { params, locale, defaultLocale } = context;
     if (locale === undefined) {
         locale = defaultLocale;
     }
     let page = null;
-    const slug = params ? params.slug[params.slug.length - 1] : null; // select last slug
-    try {
-        page = await getAreWeHeadlessYetTopicPage(slug, locale);
-    } catch (e) {
-        console.log(`Failed to obtain data :-(: ${e.message}`);
-    }
+    const slug = params
+        ? params.slug
+            ? params.slug[params.slug.length - 1]
+            : null
+        : null; // select last slug
     console.log(`slug getStaticProps:
-    params: ${JSON.stringify(params)}
-    locale: ${locale}
-    default locale: ${defaultLocale}`);
+        params: ${JSON.stringify(params)}
+        locale: ${locale}
+        default locale: ${defaultLocale}`);
+    if (slug && locale) {
+        try {
+            page = await getAreWeHeadlessYetTopicPage(slug, locale);
 
-    return {
-        props: { page: page },
-    };
+            return {
+                props: { page: page },
+            };
+        } catch (err) {
+            if (err instanceof Error) {
+                // ✅ TypeScript knows err is Error
+                console.log(`Failed to obtain data :-(: ${err.message}`);
+            } else {
+                console.log('Unexpected error', err);
+            }
+        }
+    }
 }
 
 export default TopicPage;

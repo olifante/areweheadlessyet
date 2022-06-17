@@ -1,4 +1,4 @@
-import type { NextPage } from 'next';
+import type { GetStaticPropsContext, NextPage } from 'next';
 import type { AreWeHeadlessYetHomePage } from '../components/types';
 import type { Topics } from '../components/StreamField/blocks/TopicsBlock';
 
@@ -21,17 +21,20 @@ const Home: NextPage<{ page: AreWeHeadlessYetHomePage; topics: Topics }> = ({
     </Layout>
 );
 
-export async function getStaticProps({ locale, defaultLocale }) {
-    console.log(`index getStaticProps:
-    locale: ${locale}
-    default locale: ${defaultLocale}`);
+export async function getStaticProps(context: GetStaticPropsContext) {
+    let { locale, defaultLocale } = context;
+    // console.log(`index getStaticProps:
+    // locale: ${locale}
+    // default locale: ${defaultLocale}`);
     if (locale === undefined) {
         locale = defaultLocale;
     }
-    const page = await getAreWeHeadlessYetHomePage(locale);
-    const topics = await getAreWeHeadlessYetTopics(locale);
+    if (locale) {
+        const page = await getAreWeHeadlessYetHomePage(locale);
+        const topics = await getAreWeHeadlessYetTopics(locale);
 
-    return { props: { page: page, topics: topics } };
+        return { props: { page: page, topics: topics } };
+    }
 }
 
 export default Home;
